@@ -63,7 +63,7 @@ class PriceFragment: DialogFragment() {
             newLinearLayout.addView(textView)
             newLinearLayout.addView(editText)
             mainLayout.addView(newLinearLayout)
-
+            //comment to test github
             count++
         }
     }
