@@ -48,23 +48,9 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </LinearLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:background="@drawable/simpleborder">
-
-            <include layout="@layout/my_canvas_view" />
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
 
 
 
-        </LinearLayout>
 
 </LinearLayout>
 
