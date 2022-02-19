@@ -15,8 +15,20 @@
         android:textColor="@color/white"
         android:gravity="bottom|left"
         android:background="@drawable/beer_icon"
-        app:layout_constraintEnd_toStartOf="@id/textview_time"
+        android:layout_marginTop="28px"
+        app:layout_constraintEnd_toStartOf="@id/textview_price"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/textview_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/purse"
+        android:textColor="@color/white"
+        android:gravity="center_vertical"
+        android:text="0"
+        app:layout_constraintEnd_toStartOf="@id/textview_time"
+        app:layout_constraintStart_toEndOf="@id/textview_beer_count"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -28,7 +40,7 @@
         android:text="00:00"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/textview_beer_count"
+        app:layout_constraintStart_toEndOf="@id/textview_price"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
@@ -103,6 +115,33 @@
             android:layout_height="0dp"
             android:layout_weight="1">
 
+            <Button
+                android:id="@+id/button_month_stats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="20dp"
+                android:text="MONTH\nSTATS"
+                android:textColor="@color/dark_brown"
+                app:backgroundTint="@color/white"
+
+                />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/button_alcohol_calculator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:text="ALCOHOL\nCALCULATOR"
+                android:layout_gravity="center"
+                android:textColor="@color/dark_brown"
+                app:backgroundTint="@color/white"
+                />
 
 
         </LinearLayout>

@@ -15,6 +15,7 @@ import com.example.beermanager.data.DrinkingActivity
 import com.example.beermanager.data.DrinkingActivity.Companion.allDrinkingActivities
 import com.example.beermanager.data.DrinkingActivity.Companion.loadAllDrinkingActivities
 import com.example.beermanager.data.DrinkingActivity.Companion.saveAllDrinkingActivities
+import com.example.beermanager.data.DrinkingActivity.Companion.setPrices
 import com.example.beermanager.databinding.ActivityMainBinding
 import java.util.*
 
@@ -38,6 +39,9 @@ class MainActivity : AppCompatActivity() {
         if (lastDrinkLessThan5HoursAgo) {
             currentDrinkingActivity = allDrinkingActivities.last()
             loadLastCanvas=true
+        }
+        else{
+            setPrices()
         }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

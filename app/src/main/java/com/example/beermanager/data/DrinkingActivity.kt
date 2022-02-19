@@ -1,36 +1,55 @@
 package com.example.beermanager.data
 import android.content.Context.MODE_PRIVATE
+import android.text.format.DateFormat
+import android.view.View
 import com.example.beermanager.SecondFragment.Companion.textViewBeerCount
 import org.json.JSONObject
-import java.io.File
 import java.util.*
 import kotlin.collections.*
 import com.example.beermanager.MainActivity.Companion.fileContext
+import com.example.beermanager.SecondFragment.Companion.textViewPrices
 import org.json.JSONException
 import java.io.IOException
 import java.io.InputStreamReader
 import java.lang.System.out
+import android.text.format.DateUtils
+
+
+
 
 
 class DrinkingActivity {
     var startOfDrinking: Date = Date(0);
     var timeOfFirstAlcoholicBeer: Date = Date(0);
-    var drinkedBeers: MutableMap<TypeOfBeer, Int> = mutableMapOf<TypeOfBeer,Int>()
+    var drankBeers: MutableMap<TypeOfBeer, Int> = mutableMapOf<TypeOfBeer,Int>()
+    var prices: MutableMap<TypeOfBeer, Double> = mutableMapOf<TypeOfBeer,Double>()
     var timeOfLastAlcoholicBeer: Date = Date(0);
     var lastDrink: Date = Date(0);
 
     var currentTypeOfBeer:TypeOfBeer= TypeOfBeer.ELEVEN
     init{
         for (typeOfBeer in TypeOfBeer.values()) {
-            drinkedBeers[typeOfBeer] = 0
+            drankBeers[typeOfBeer] = 0
+            prices[typeOfBeer]= 0.0
         }
     }
 
     fun getNumberOfBeers(): Int{
-        return drinkedBeers.values.sum()
+        return drankBeers.values.sum()
     }
+
+    fun getFullPrice():Double{
+        var sum=0.0
+       for (typeOfBeer in TypeOfBeer.values()){
+           sum+= drankBeers[typeOfBeer]!! * prices[typeOfBeer]!!
+       }
+        return sum
+    }
+
+
+
     fun addBeer(){
-        drinkedBeers[currentTypeOfBeer]= drinkedBeers.getOrDefault(currentTypeOfBeer,0) + 1;
+        drankBeers[currentTypeOfBeer]= drankBeers.getOrDefault(currentTypeOfBeer,0) + 1;
         lastDrink= Date()
         if((currentTypeOfBeer!=TypeOfBeer.NONALCOHOLIC)) {
             timeOfLastAlcoholicBeer = Date()
@@ -41,7 +60,15 @@ class DrinkingActivity {
             startOfDrinking = Date()
             allDrinkingActivities.add(this)
         }
-        textViewBeerCount?.text ="  "+ getNumberOfBeers()
+        textViewBeerCount?.text = "  "+ getNumberOfBeers()
+        val fullPrice= getFullPrice()
+        if(fullPrice>0.0){
+            textViewPrices?.text= " " + fullPrice.toString()
+            textViewPrices?.visibility= View.VISIBLE
+        }
+        else{
+            textViewPrices?.visibility= View.INVISIBLE
+        }
     }
 
 
@@ -59,7 +86,19 @@ class DrinkingActivity {
             else {
                 jsonString+=","
             }
-            jsonString+="\"${drinkedBeers[typeOfBeer]}\""
+            jsonString+="\"${drankBeers[typeOfBeer]}\""
+        }
+        jsonString+="],\n"
+        jsonString+="\"prices\": ["
+        first=true
+        for (typeOfBeer in TypeOfBeer.values()){
+            if (first) {
+                first = false;
+            }
+            else {
+                jsonString+=","
+            }
+            jsonString+="\"${prices[typeOfBeer]}\""
         }
         jsonString+="],\n"
         jsonString+="\"timeOfLastAlcoholicBeer\":\"${timeOfLastAlcoholicBeer.time}\",\n"
@@ -142,12 +181,64 @@ class DrinkingActivity {
             drinkingActivity.currentTypeOfBeer= TypeOfBeer.values()[drinkingActivityJSON.getInt("currentTypeOfBeer")]
             val drinkedBeersJSON = drinkingActivityJSON.getJSONArray("drinkedBeers")
             for (i in 0 until drinkedBeersJSON.length())  {
-                val key= drinkingActivity.drinkedBeers.keys.elementAt(i)
-                drinkingActivity.drinkedBeers[key] = drinkedBeersJSON.getInt(i)
+                val key= drinkingActivity.drankBeers.keys.elementAt(i)
+                drinkingActivity.drankBeers[key] = drinkedBeersJSON.getInt(i)
+            }
+            if(drinkingActivityJSON.has("prices")) {
+                val pricesJSON = drinkingActivityJSON.getJSONArray("prices")
+                for (i in 0 until pricesJSON.length()) {
+                    val key = drinkingActivity.prices.keys.elementAt(i)
+                    drinkingActivity.prices[key] = pricesJSON.getDouble(i)
+                }
             }
             return drinkingActivity
         }
+
+
+
+        fun setPrices(){
+            if (allDrinkingActivities.count()>0) {
+                for (activity in allDrinkingActivities.reversed()) {
+                    for (typeOfBeer in TypeOfBeer.values()) {
+                        if (activity.prices.containsKey(typeOfBeer) && (activity.prices[typeOfBeer]!! > 0.0)) {
+                            allDrinkingActivities.last().prices[typeOfBeer] = activity.prices[typeOfBeer]!!.toDouble()
+                        }
+                    }
+                    if (allDrinkingActivities.last().prices.all { it.value > 0.0 })
+                        break;
+                }
+            }
+        }
+
+        fun getNumberOfBeersByMonth() : MutableMap<Pair<String,String>,Int> {
+            var monthstats = mutableMapOf<Pair<String,String>,Int>()
+            var date = allDrinkingActivities.first().startOfDrinking
+            val cal = Calendar.getInstance()
+            cal.time = date
+            cal.add(Calendar.MONTH, -1)
+            date= cal.time
+            while(date<=Date()){
+                val monthNumber = DateFormat.format("MM", date) as String
+                val year = DateFormat.format("yyyy", date) as String
+                monthstats[Pair(monthNumber,year)]=0
+                val cal = Calendar.getInstance()
+                cal.time = date
+                cal.add(Calendar.MONTH, 1)
+                date= cal.time
+            }
+            for (activity in allDrinkingActivities){
+                val monthString = DateFormat.format("MMM", activity.startOfDrinking) as String
+                val monthNumber = DateFormat.format("MM", activity.startOfDrinking) as String
+                val year = DateFormat.format("yyyy", activity.startOfDrinking) as String
+                val beersDrankInActivity:Int=activity.drankBeers.values.sum()
+                monthstats[Pair(monthNumber,year)] = beersDrankInActivity + monthstats[Pair(monthNumber,year)]!!
+            }
+            return monthstats
+        }
     }
+
+
+
 }
 
 

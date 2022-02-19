@@ -1,59 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout
+    android:id="@+id/mainlayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:clipChildren="false"
+    >
+
     <LinearLayout
-        android:id="@+id/main_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true">
+        #added just to get button to the right
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+        android:layout_weight="3"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"/>
+
+        <Button
+            android:id="@+id/button_set_prices"
+            android:layout_width="wrap_content"
             android:layout_weight="2"
-            android:gravity="center">
-            <TextView
-                android:id="@+id/textView"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-            <EditText
-                android:id="@+id/editTextNumberDecimal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="numberDecimal" />
-
-
-            <Button
-                android:id="@+id/button_set_prices"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="SET\nPRICES"
-                android:textColor="@color/dark_brown"
-                android:layout_gravity="center"
-                android:layout_marginStart="20dp"
-                app:backgroundTint="@color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/picker_TypeOfBeer"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </LinearLayout>
-
-
-
-
-</LinearLayout>
-
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="20dp"
+            android:text="SET\nPRICES"
+            android:textColor="@color/dark_brown"
+            app:backgroundTint="@color/white" />
+    </LinearLayout>
+</RelativeLayout>

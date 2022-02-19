@@ -5,12 +5,14 @@
       <map>
         <entry key="..\:/Users/patri/AndroidStudioProjects/BeerManager/app/src/main/res/drawable/simpleborder.xml" value="0.14635416666666667" />
         <entry key="..\:/Users/patri/AndroidStudioProjects/BeerManager/app/src/main/res/layout/activity_main.xml" value="0.1816123188405797" />
+        <entry key="..\:/Users/patri/AndroidStudioProjects/BeerManager/app/src/main/res/layout/calculator_fragment.xml" value="0.152" />
         <entry key="..\:/Users/patri/AndroidStudioProjects/BeerManager/app/src/main/res/layout/content_main.xml" value="0.13020833333333334" />
         <entry key="..\:/Users/patri/AndroidStudioProjects/BeerManager/app/src/main/res/layout/fragment_first.xml" value="0.2" />
         <entry key="..\:/Users/patri/AndroidStudioProjects/BeerManager/app/src/main/res/layout/fragment_line.xml" value="0.13020833333333334" />
-        <entry key="..\:/Users/patri/AndroidStudioProjects/BeerManager/app/src/main/res/layout/fragment_second.xml" value="0.16" />
+        <entry key="..\:/Users/patri/AndroidStudioProjects/BeerManager/app/src/main/res/layout/fragment_second.xml" value="0.2" />
         <entry key="..\:/Users/patri/AndroidStudioProjects/BeerManager/app/src/main/res/layout/my_canvas_view.xml" value="0.16893115942028986" />
-        <entry key="..\:/Users/patri/AndroidStudioProjects/BeerManager/app/src/main/res/layout/price_fragment.xml" value="0.1" />
+        <entry key="..\:/Users/patri/AndroidStudioProjects/BeerManager/app/src/main/res/layout/price_fragment.xml" value="0.152" />
+        <entry key="..\:/Users/patri/AndroidStudioProjects/BeerManager/app/src/main/res/layout/stats_fragment.xml" value="0.223731884057971" />
       </map>
     </option>
   </component>

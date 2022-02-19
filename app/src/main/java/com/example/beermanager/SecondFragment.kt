@@ -20,8 +20,12 @@ import android.app.AlertDialog
 import com.example.beermanager.MainActivity.Companion.loadLastCanvas
 import com.example.beermanager.data.DrinkingActivity
 import android.content.DialogInterface
+import android.opengl.Visibility
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import com.example.beermanager.MyCanvasView.Companion.pathList
 import com.example.beermanager.data.PriceFragment
+import com.example.beermanager.data.StatsFragment
 import com.example.beermanager.data.TypeOfBeer
 import kotlin.collections.ArrayList
 
@@ -35,6 +39,8 @@ class SecondFragment : Fragment() {
         var path = Path()
         var paint = Paint()
         var textViewBeerCount:TextView?= null
+        var textViewPrices:TextView?= null
+
     }
 
     private var _binding: FragmentSecondBinding? = null
@@ -49,13 +55,31 @@ class SecondFragment : Fragment() {
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
         startMinuteUpdater()
         binding.textviewBeerCount.text= "  " + currentDrinkingActivity.getNumberOfBeers()
+        val fullPrice= currentDrinkingActivity.getFullPrice()
+        if(fullPrice>0.0){
+            binding.textviewPrice.visibility=VISIBLE
+            binding.textviewPrice.text= fullPrice.toString()
+        }
+        else{
+            binding.textviewPrice.visibility=INVISIBLE
+        }
+
         textViewBeerCount = binding.textviewBeerCount
+        textViewPrices=binding.textviewPrice
         binding.buttonNewDrinking.setOnClickListener(View.OnClickListener {
             confirmingDialogNewDrinking()?.show()
         })
         binding.buttonSetPrices.setOnClickListener(View.OnClickListener {
             var priceFragment= PriceFragment()
             priceFragment.show(childFragmentManager,"")
+        })
+        binding.buttonMonthStats.setOnClickListener(View.OnClickListener {
+            var statsFragment= StatsFragment()
+            statsFragment.show(childFragmentManager,"")
+        })
+        binding.buttonAlcoholCalculator.setOnClickListener(View.OnClickListener {
+            var calculatorFragment= CalculatorFragment()
+            calculatorFragment.show(childFragmentManager,"")
         })
         setPicker()
         return binding.root
@@ -65,6 +89,7 @@ class SecondFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.textviewTime.textSize = 20F
         binding.textviewBeerCount.textSize = 40F
+        binding.textviewPrice.textSize = 30F
 
     }
 
@@ -100,6 +125,14 @@ class SecondFragment : Fragment() {
                 currentDrinkingActivity= DrinkingActivity()
                 loadLastCanvas=false
                 binding.textviewBeerCount.text= "  " + currentDrinkingActivity.getNumberOfBeers()
+                val fullPrice= currentDrinkingActivity.getFullPrice()
+                if(fullPrice>0.0){
+                    binding.textviewPrice.visibility=VISIBLE
+                    binding.textviewPrice.text= " " + fullPrice.toString()
+                }
+                else{
+                    binding.textviewPrice.visibility=INVISIBLE
+                }
                 binding.textviewTime.text="00:00"
                 pathList.clear()
              })
