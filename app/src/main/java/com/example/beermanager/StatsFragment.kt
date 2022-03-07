@@ -1,8 +1,7 @@
-package com.example.beermanager.data
+package com.example.beermanager
 
 import android.graphics.Color
 import android.os.Bundle
-import android.text.format.Formatter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,31 +14,32 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.formatter.*
-import com.github.mikephil.charting.utils.ViewPortHandler
 
-
+/**
+ * Controls views of Stats Fragment layout and performs required actions.
+ */
 class StatsFragment: DialogFragment() {
     private var _binding: StatsFragmentBinding? = null
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
-    private var editTextPrices = ArrayList<EditText>()
 
 
+    /**
+     * Loads data and creates graph representation.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = StatsFragmentBinding.inflate(inflater, container, false)
-
         var monthStats=getNumberOfBeersByMonth()
         var barEntries = ArrayList<BarEntry>()
         var count = 0
+        //data
         for(numberOfBeers in monthStats.values) {
             barEntries.add(BarEntry(count.toFloat(),numberOfBeers.toFloat()))
-
             count++
         }
+        //X axis labels
         var axisInfo= java.util.ArrayList<String>()
         for(keypair in monthStats.keys){
             axisInfo.add(keypair.first+'/'+keypair.second.substring(2))
@@ -54,6 +54,7 @@ class StatsFragment: DialogFragment() {
         binding.barGraph.setFitBars(true);
         binding.barGraph.xAxis.valueFormatter = IndexAxisValueFormatter(axisInfo)
 
+        //Adjusting the graph view
         binding.barGraph.legend.textSize=20F
         binding.barGraph.xAxis.position=XAxis.XAxisPosition.BOTTOM
         binding.barGraph.axisLeft.textSize=0F

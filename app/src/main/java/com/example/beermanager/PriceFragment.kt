@@ -1,4 +1,4 @@
-package com.example.beermanager.data
+package com.example.beermanager
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,13 +13,20 @@ import android.widget.*
 import androidx.core.view.children
 import com.example.beermanager.MainActivity.Companion.currentDrinkingActivity
 import com.example.beermanager.SecondFragment.Companion.textViewPrices
+import com.example.beermanager.data.TypeOfBeer
 
-
+/**
+ *  Controls views of Price Fragment layout and performs required actions.
+ */
 class PriceFragment: DialogFragment() {
     private var _binding: PriceFragmentBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    /**
+     * Contains all edittexts displayed in fragment (one for each type of beer)
+     */
     private var editTextPrices = ArrayList<EditText>()
 
 
@@ -37,27 +44,24 @@ class PriceFragment: DialogFragment() {
 
     }
 
+    /**
+     * Creates layout that contains textview and edittext for each type of beer
+     */
     fun LoadForAllTypesOfBeer(){
         val mainLayout = binding.mainlayout
-        var count = 0
-        var id=View.generateViewId();
+        //var count = 0
+
         for (typeOfBeer in TypeOfBeer.values()){
             val p = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
 
-
-
-
+            val id=View.generateViewId();
             val newLinearLayout= LinearLayout(context)
             newLinearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,0)
             newLinearLayout.gravity=Gravity.CENTER
-            newLinearLayout.id=1500+count //magic number
-            //(newLinearLayout.layoutParams as LinearLayout.LayoutParams).weight=2F
-
-
-
+            newLinearLayout.id=id
 
             val textView= TextView(context)
             textView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT)
@@ -73,12 +77,8 @@ class PriceFragment: DialogFragment() {
             }
             editTextPrices.add(editText)
 
-            /*newLinearLayout.addView(textView,p)
-            newLinearLayout.addView(editText,p)*/
             newLinearLayout.post(Runnable { newLinearLayout.addView(textView,p) })
             newLinearLayout.post(Runnable { newLinearLayout.addView(editText,p) })
-            //mainLayout.addView(newLinearLayout,p)
-            //(newLinearLayout.parent as LinearLayout).removeView(newLinearLayout)
             mainLayout.post(Runnable {
                 mainLayout.addView(newLinearLayout,p)
                 if (mainLayout.children.count()>1) {
@@ -88,11 +88,12 @@ class PriceFragment: DialogFragment() {
                     )
                 }
             })
-
-            count++
         }
     }
 
+    /**
+     * Saves prices to current drinking activity instance.
+     */
     fun savePrices() {
         try
         {
@@ -117,6 +118,9 @@ class PriceFragment: DialogFragment() {
         this.dismiss()
     }
 
+    /**
+     * Loads prices from current drinking activity instance to created edittexts.
+     */
     fun loadPrices() {
         var index=0
         for (typeOfBeer in TypeOfBeer.values()) {

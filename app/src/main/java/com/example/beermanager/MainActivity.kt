@@ -15,14 +15,24 @@ import com.example.beermanager.data.DrinkingActivity
 import com.example.beermanager.data.DrinkingActivity.Companion.allDrinkingActivities
 import com.example.beermanager.data.DrinkingActivity.Companion.loadAllDrinkingActivities
 import com.example.beermanager.data.DrinkingActivity.Companion.saveAllDrinkingActivities
-import com.example.beermanager.data.DrinkingActivity.Companion.setPrices
 import com.example.beermanager.databinding.ActivityMainBinding
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
     companion object{
+        /**
+         * Current drinking activity showed to user and controlled by user.
+         */
         var currentDrinkingActivity:DrinkingActivity= DrinkingActivity();
+
+        /**
+         * Used for writing and reading files in app.
+         */
         var fileContext: Context? =null
+
+        /**
+         * Specifies if canvas of last run of the app should be loaded to current canvas.
+         */
         var loadLastCanvas=false
     }
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -40,25 +50,11 @@ class MainActivity : AppCompatActivity() {
             currentDrinkingActivity = allDrinkingActivities.last()
             loadLastCanvas=true
         }
-        else{
-            setPrices()
-        }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        //setSupportActionBar(binding.toolbar)
-
-        /*val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }*/
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }

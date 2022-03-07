@@ -14,18 +14,14 @@ import java.util.*
 import android.os.Handler
 import android.os.Looper
 import android.widget.TextView
-import android.R
-import android.accessibilityservice.GestureDescription
 import android.app.AlertDialog
 import com.example.beermanager.MainActivity.Companion.loadLastCanvas
 import com.example.beermanager.data.DrinkingActivity
 import android.content.DialogInterface
-import android.opengl.Visibility
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import com.example.beermanager.MyCanvasView.Companion.pathList
-import com.example.beermanager.data.PriceFragment
-import com.example.beermanager.data.StatsFragment
+import com.example.beermanager.PriceFragment
 import com.example.beermanager.data.TypeOfBeer
 import kotlin.collections.ArrayList
 
@@ -35,12 +31,26 @@ import kotlin.collections.ArrayList
  */
 class SecondFragment : Fragment() {
     companion object {
+        /**
+         * Stores path of user touch.
+         */
         @JvmStatic
         var path = Path()
-        var paint = Paint()
-        var textViewBeerCount:TextView?= null
-        var textViewPrices:TextView?= null
 
+        /**
+         * Stores type of paint to be used to record user touch on screen.
+         */
+        var paint = Paint()
+
+        /**
+         * The text view for beer count in this fragment.
+         */
+        var textViewBeerCount:TextView?= null
+
+        /**
+         * The text view for fullprice in this fragment.
+         */
+        var textViewPrices:TextView?= null
     }
 
     private var _binding: FragmentSecondBinding? = null
@@ -63,7 +73,6 @@ class SecondFragment : Fragment() {
         else{
             binding.textviewPrice.visibility=INVISIBLE
         }
-
         textViewBeerCount = binding.textviewBeerCount
         textViewPrices=binding.textviewPrice
         binding.buttonNewDrinking.setOnClickListener(View.OnClickListener {
@@ -98,6 +107,9 @@ class SecondFragment : Fragment() {
         _binding = null
     }
 
+    /**
+     * Starts updater that passes every minute and updates the time of drinking textview
+     */
     fun startMinuteUpdater() {
         var timeOfDrinking="00:00"
         if(currentDrinkingActivity.startOfDrinking!=Date(0)) {
@@ -111,12 +123,18 @@ class SecondFragment : Fragment() {
         refresh(60000)
     }
 
+    /**
+     * Used by the minute update method.
+     */
     fun refresh(miliseconds:Int){
         Handler(Looper.getMainLooper()).postDelayed({
             startMinuteUpdater()
         }, miliseconds.toLong())
     }
 
+    /**
+     * Shows dialog before starting new drinking sessions. And potentially handles creating new drinking session.
+     */
     fun confirmingDialogNewDrinking(): AlertDialog? {
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
         builder.setMessage("Are you sure you want to start new drinking?\n You will not be able return to the previous one")
@@ -138,11 +156,12 @@ class SecondFragment : Fragment() {
              })
             .setNegativeButton("No", DialogInterface.OnClickListener { dialog, id ->
             })
-        // Create the AlertDialog object and return it
-        // Create the AlertDialog object and return it
         return builder.create()
     }
 
+    /**
+     * Load values for picker of types of beer
+     */
     fun setPicker(){
         val picker = binding.pickerTypeOfBeer
         var values:ArrayList<String> = ArrayList()

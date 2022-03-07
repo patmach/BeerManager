@@ -1,5 +1,8 @@
 package com.example.beermanager.data
 
+/**
+ * Contains different types of beer.
+ */
 enum class TypeOfBeer{
     NONALCOHOLIC{
         override fun toString()= "NON-ALCOHOLIC"
@@ -10,7 +13,7 @@ enum class TypeOfBeer{
     ,TEN{
         override fun toString()= "10°"
         override fun getAlcoholPercentage(): Double {
-            return 4.2/100
+            return 4.0/100
         }
     }
     , ELEVEN{
@@ -28,9 +31,17 @@ enum class TypeOfBeer{
     , THIRTEEN{
         override fun toString()= "13°"
         override fun getAlcoholPercentage(): Double {
-            return 5.7/100
+            return 5.6/100
         }
     };
+
+    /**
+     * @return String representation of the value that is shown to the user.
+     */
     abstract override fun toString(): String
+
+    /**
+     * @return Estimated percentage of alcohol in particular type of beer.
+     */
     abstract fun getAlcoholPercentage(): Double
 }

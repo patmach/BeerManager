@@ -1,5 +1,4 @@
 package com.example.beermanager
-import android.R.attr
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
@@ -11,29 +10,66 @@ import com.example.beermanager.MainActivity.Companion.currentDrinkingActivity
 import com.example.beermanager.MainActivity.Companion.loadLastCanvas
 import com.example.beermanager.SecondFragment.Companion.paint
 import com.example.beermanager.SecondFragment.Companion.path
-import com.example.beermanager.data.DrinkingActivity
-import org.json.JSONObject
 import java.io.IOException
-import java.io.InputStreamReader
 import java.lang.System.out
-import android.R.attr.bitmap
-
-
 
 
 class MyCanvasView: View{
-    var params : ViewGroup.LayoutParams? = null
+    private var params : ViewGroup.LayoutParams? = null
+
+    /**
+     * Remembers x coordinate of position for start of touch sequence (MOVE DOWN)
+     */
     private var eventstartX=0F
+
+    /**
+     * Remembers y coordinate of position for start of touch sequence (MOVE DOWN)
+     */
     private var eventstartY=0F
+
+    /**
+     * Remembers whole path of current/last touch sequence
+     */
     private var currentPathX = ArrayList<Float>()
+
+    /**
+     * Remembers whole path of current/last touch sequence
+     */
     private var currentPathY = ArrayList<Float>()
+
+    /**
+    * Toast used for messages for user about validity of drawn line
+    */
     private var mToast:Toast?=null
+
+    /**
+     * Flag indicating if current canvas state should be saved to bitmap file.
+     */
     private var saveCanvasToBitmap=false;
+
+    /**
+     * Can contain bitmap from last run of application
+     */
     private var lastBitmapOfPreviousRun:Bitmap?=null
     companion object{
+        /**
+         * Contains paths of already valid drawn lines.
+         */
+
         var pathList = ArrayList<Path>();
+        /**
+         * Contains path of currently drawn line.
+         */
         var newPathList=ArrayList<Path>()
+
+        /**
+         * Contains paths of already invalid drawn lines.
+         */
         var badPathList=ArrayList<Path>()
+
+        /**
+         * Specifies which color to use for painting lines.
+         */
         var currentBrush = Color.WHITE;
     }
     constructor(context: Context) : this(context, null){
@@ -45,6 +81,10 @@ class MyCanvasView: View{
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         init()
     }
+
+    /**
+     * Constructor. Initiliaze canvas.
+     */
     private fun init(){
         mToast= Toast.makeText(context, "", Toast.LENGTH_LONG);
         paint.isAntiAlias =true;
@@ -61,8 +101,8 @@ class MyCanvasView: View{
             return true;
         var x = event.x;
         var y = event.y
-        var lastpath=Path()
-        when(event?.action){
+        when(event.action){
+            //Move started
             MotionEvent.ACTION_DOWN ->{
                 currentPathX.clear()
                 currentPathY.clear()
@@ -72,12 +112,14 @@ class MyCanvasView: View{
                 eventstartY=y
                 return true;
             }
+            //Move continues
             MotionEvent.ACTION_MOVE ->{
                 currentPathX.add(x);
                 currentPathY.add(y);
                 path.lineTo(x,y)
                 newPathList.add(path);
             }
+            //Move ended
             MotionEvent.ACTION_UP->{
                 return checkLine(x,y)
             }
@@ -91,35 +133,45 @@ class MyCanvasView: View{
     override fun onDraw(canvas: Canvas?) {
         if (canvas==null)
             return;
+        //Loads canvas from previous run of app if this run continues in the same drinking activity.
         if (loadLastCanvas){
             try{
-                loadCanvasToBitmap(canvas)
+                loadBitmapToCanvas(canvas)
             }
             catch (e:IOException){
 
             }
         }
 
+        //Draws line from current move of user touch.
         for (i in newPathList.indices){
             paint.color = currentBrush
             canvas.drawPath(newPathList[i], paint);
             invalidate();
         }
+
+        //Making invalid lines invisible to user.
         for (i in badPathList.indices){
             paint.color = Color.TRANSPARENT;
             canvas.drawPath(badPathList[i], paint);
             invalidate();
         }
+
+        //Draws already valid lines.
         for (i in pathList.indices){
             paint.color = currentBrush;
             canvas.drawPath(pathList[i], paint);
             invalidate();
         }
+
         if(saveCanvasToBitmap){
             saveCanvasToBitmap()
         }
     }
 
+    /**
+     * Saves current canvas state to bitmap file.
+     */
     fun saveCanvasToBitmap(){
         try{
             saveCanvasToBitmap=false
@@ -136,7 +188,10 @@ class MyCanvasView: View{
         }
     }
 
-    fun loadCanvasToBitmap(canvas:Canvas){
+    /**
+     * Draws bitmap to canvas.
+     */
+    fun loadBitmapToCanvas(canvas:Canvas){
         try{
             var bitmapData: ByteArray = ByteArray(0)
             if(lastBitmapOfPreviousRun==null) {
@@ -157,20 +212,28 @@ class MyCanvasView: View{
         }
     }
 
+    /**
+     * Checks if new drawn line is valid
+     */
     private fun checkLine(x:Float,y:Float):Boolean{
         val eventendX=x
         val eventendY=y
         var heightok=false;
         var widthok = false;
         var trajectoryok=false;
+        //High atleast as 1/3 of canvas height
         if(eventendY-eventstartY>this.height/3)
             heightok=true
+        //Not wider than 1/5 of canvas width
         if (Math.abs((currentPathX.maxOrNull()?: Float.MAX_VALUE)-(currentPathX.minOrNull()?:Float.MIN_VALUE))<this.width/5)
             widthok=true;
+
+        //Drawn in one direction
         if ((currentPathY.indices.all { i -> (i==currentPathY.lastIndex) || (currentPathY[i]<currentPathY[i+1])}) ||
             (currentPathY.indices.all { i -> (i==0) || (currentPathY[i]<currentPathY[i-1])})) {
             trajectoryok = true;
         }
+
         if (heightok && widthok && trajectoryok){
             pathList.addAll(newPathList)
             mToast?.setText("Beer added")
@@ -178,7 +241,6 @@ class MyCanvasView: View{
             currentDrinkingActivity.addBeer()
         }
         else {
-            //Log.i("Info","bad line")
             badPathList.addAll(newPathList)
             path=Path()
             var message="BAD LINE!\n"

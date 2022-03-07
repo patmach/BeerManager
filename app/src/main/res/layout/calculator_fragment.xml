@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main_layout"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <LinearLayout
@@ -15,25 +15,14 @@
         app:layout_constraintTop_toTopOf="parent">
 
     >
-        <Switch
-            android:id="@+id/switch_sex"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="Sex"
-            android:textOff="Male"
-            android:textOn="Female"
-            android:layout_weight="1"/>
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="3" />
+
         <TextView
             android:id="@+id/textview_weight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Weight (kg)"
             android:layout_weight="1"
+            android:textColor="@color/dark_brown"
             />
         <EditText
             android:id="@+id/edittext_weight"
@@ -43,18 +32,41 @@
             android:inputType="numberDecimal"
             android:layout_weight="1"
             />
-
-
     </LinearLayout>
     <LinearLayout
         android:id="@+id/layout2"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layout1">
+
+        <Switch
+            android:id="@+id/switch_sex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:showText="true"
+            android:text="Sex"
+            android:textOff="Male"
+            android:textOn="Female"
+            android:textColor="@color/dark_brown"
+            android:layout_weight="1"/>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+        </View>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout2">
 
         <Button
             android:id="@+id/button_calculate"
@@ -65,14 +77,30 @@
             android:textColor="@color/white"
             />
     </LinearLayout>
-
     <LinearLayout
-        android:id="@+id/layout3"
+        android:id="@+id/layout4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout3">
+        <TextView
+            android:id="@+id/textview_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:layout_weight="1"
+            android:textColor="@color/dark_brown"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/layout5"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layout2">
+        app:layout_constraintTop_toBottomOf="@id/layout4">
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/line_graph"
         android:layout_width="match_parent"
@@ -80,6 +108,7 @@
         />
 
     </LinearLayout>
+
 
 
 
