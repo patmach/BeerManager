@@ -2,19 +2,16 @@ package com.example.beermanager
 
 import android.content.Context
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
-import com.example.beermanager.data.DrinkingActivity
-import com.example.beermanager.data.DrinkingActivity.Companion.allDrinkingActivities
-import com.example.beermanager.data.DrinkingActivity.Companion.loadAllDrinkingActivities
-import com.example.beermanager.data.DrinkingActivity.Companion.saveAllDrinkingActivities
+import com.example.beermanager.data.DrinkingSession
+import com.example.beermanager.data.DrinkingSession.Companion.allDrinkingSessions
+import com.example.beermanager.data.DrinkingSession.Companion.loadAllDrinkingSessions
+import com.example.beermanager.data.DrinkingSession.Companion.saveAllDrinkingSessions
 import com.example.beermanager.databinding.ActivityMainBinding
 import java.util.*
 
@@ -23,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         /**
          * Current drinking activity showed to user and controlled by user.
          */
-        var currentDrinkingActivity:DrinkingActivity= DrinkingActivity();
+        var currentDrinkingSession:DrinkingSession= DrinkingSession()
 
         /**
          * Used for writing and reading files in app.
@@ -41,13 +38,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fileContext=applicationContext
-        loadAllDrinkingActivities()
-        val lastDrinkLessThan5HoursAgo = allDrinkingActivities.any()
+        loadAllDrinkingSessions()
+        val lastDrinkLessThan5HoursAgo = allDrinkingSessions.any()
         {
             (Date().time-it.lastDrink.time)/(1000*60*60)<=5
         }
         if (lastDrinkLessThan5HoursAgo) {
-            currentDrinkingActivity = allDrinkingActivities.last()
+            currentDrinkingSession = allDrinkingSessions.last()
             loadLastCanvas=true
         }
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -75,9 +72,9 @@ class MainActivity : AppCompatActivity() {
                 || super.onSupportNavigateUp()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        saveAllDrinkingActivities()
+    override fun onPause() {
+        super.onPause()
+        saveAllDrinkingSessions()
     }
 
 

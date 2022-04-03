@@ -5,9 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:clipChildren="false"
-
-    >
+    android:clipChildren="false">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,7 +25,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginStart="20dp"
-            android:text="SET\nPRICES"
+            android:text="@string/set_prices"
             android:textColor="@color/dark_brown"
             app:backgroundTint="@color/white" />
     </LinearLayout>

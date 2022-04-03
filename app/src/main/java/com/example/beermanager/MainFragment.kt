@@ -7,21 +7,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.beermanager.MainActivity.Companion.currentDrinkingActivity
-import com.example.beermanager.databinding.FragmentSecondBinding
+import com.example.beermanager.MainActivity.Companion.currentDrinkingSession
+import com.example.beermanager.databinding.FragmentMainBinding
 import java.util.*
 
 import android.os.Handler
 import android.os.Looper
-import android.widget.TextView
 import android.app.AlertDialog
 import com.example.beermanager.MainActivity.Companion.loadLastCanvas
-import com.example.beermanager.data.DrinkingActivity
+import com.example.beermanager.data.DrinkingSession
 import android.content.DialogInterface
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
-import com.example.beermanager.MyCanvasView.Companion.pathList
-import com.example.beermanager.PriceFragment
 import com.example.beermanager.data.TypeOfBeer
 import kotlin.collections.ArrayList
 
@@ -29,7 +26,7 @@ import kotlin.collections.ArrayList
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
-class SecondFragment : Fragment() {
+class MainFragment : Fragment() {
     companion object {
         /**
          * Stores path of user touch.
@@ -42,39 +39,22 @@ class SecondFragment : Fragment() {
          */
         var paint = Paint()
 
-        /**
-         * The text view for beer count in this fragment.
-         */
-        var textViewBeerCount:TextView?= null
-
-        /**
-         * The text view for fullprice in this fragment.
-         */
-        var textViewPrices:TextView?= null
     }
 
-    private var _binding: FragmentSecondBinding? = null
+    private var _binding: FragmentMainBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private var canvas : MyCanvasView? = null;
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentSecondBinding.inflate(inflater, container, false)
+        _binding = FragmentMainBinding.inflate(inflater, container, false)
         startMinuteUpdater()
-        binding.textviewBeerCount.text= "  " + currentDrinkingActivity.getNumberOfBeers()
-        val fullPrice= currentDrinkingActivity.getFullPrice()
-        if(fullPrice>0.0){
-            binding.textviewPrice.visibility=VISIBLE
-            binding.textviewPrice.text= fullPrice.toString()
-        }
-        else{
-            binding.textviewPrice.visibility=INVISIBLE
-        }
-        textViewBeerCount = binding.textviewBeerCount
-        textViewPrices=binding.textviewPrice
+        startSecondUpdater()
         binding.buttonNewDrinking.setOnClickListener(View.OnClickListener {
             confirmingDialogNewDrinking()?.show()
         })
@@ -96,10 +76,6 @@ class SecondFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.textviewTime.textSize = 20F
-        binding.textviewBeerCount.textSize = 40F
-        binding.textviewPrice.textSize = 30F
-
     }
 
     override fun onDestroyView() {
@@ -112,23 +88,44 @@ class SecondFragment : Fragment() {
      */
     fun startMinuteUpdater() {
         var timeOfDrinking="00:00"
-        if(currentDrinkingActivity.startOfDrinking!=Date(0)) {
-            val diff: Long = Date().time - currentDrinkingActivity.startOfDrinking.time
+        if(currentDrinkingSession.startOfDrinking!=Date(0)) {
+            val diff: Long = Date().time - currentDrinkingSession.startOfDrinking.time
             val seconds = diff / 1000
             val minutes = seconds / 60
             val hours = minutes / 60
-            timeOfDrinking= String.format("%02d:%02d", hours, minutes)
+            timeOfDrinking= String.format("%02d:%02d", hours, minutes - (hours*60))
         }
-        binding.textviewTime.text=timeOfDrinking;
-        refresh(60000)
+        if (_binding!=null)
+            binding.textviewTime.text=timeOfDrinking;
+        refreshTimeUpdater(60000)
+    }
+
+    fun startSecondUpdater(){
+        if (_binding!=null) {
+            var fullPrice = currentDrinkingSession.getFullPrice();
+            if (fullPrice > 0) {
+                binding.textviewPrice.text = " " + fullPrice.toString()
+                binding.textviewPrice.visibility = VISIBLE;
+            } else
+                binding.textviewPrice.visibility = INVISIBLE
+            binding.textviewBeerCount.text = "  " + currentDrinkingSession.getNumberOfBeers();
+        }
+        refreshBeerCountAndPriceUpdater(1000)
+
     }
 
     /**
      * Used by the minute update method.
      */
-    fun refresh(miliseconds:Int){
+    fun refreshTimeUpdater(miliseconds:Int){
         Handler(Looper.getMainLooper()).postDelayed({
             startMinuteUpdater()
+        }, miliseconds.toLong())
+    }
+
+    fun refreshBeerCountAndPriceUpdater(miliseconds:Int){
+        Handler(Looper.getMainLooper()).postDelayed({
+            startSecondUpdater()
         }, miliseconds.toLong())
     }
 
@@ -137,13 +134,13 @@ class SecondFragment : Fragment() {
      */
     fun confirmingDialogNewDrinking(): AlertDialog? {
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-        builder.setMessage("Are you sure you want to start new drinking?\n You will not be able return to the previous one")
-            .setTitle("CONFIRM")
-            .setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, id ->
-                currentDrinkingActivity= DrinkingActivity()
+        builder.setMessage(getString(R.string.new_drinking_confirm_question))
+            .setTitle(getString(R.string.confirm))
+            .setPositiveButton(getString(R.string.yes), DialogInterface.OnClickListener { dialog, id ->
+                currentDrinkingSession= DrinkingSession()
                 loadLastCanvas=false
-                binding.textviewBeerCount.text= "  " + currentDrinkingActivity.getNumberOfBeers()
-                val fullPrice= currentDrinkingActivity.getFullPrice()
+                binding.textviewBeerCount.text= "  " + currentDrinkingSession.getNumberOfBeers()
+                val fullPrice= currentDrinkingSession.getFullPrice()
                 if(fullPrice>0.0){
                     binding.textviewPrice.visibility=VISIBLE
                     binding.textviewPrice.text= " " + fullPrice.toString()
@@ -152,9 +149,9 @@ class SecondFragment : Fragment() {
                     binding.textviewPrice.visibility=INVISIBLE
                 }
                 binding.textviewTime.text="00:00"
-                pathList.clear()
+                binding.myCanvasView.pathList.clear()
              })
-            .setNegativeButton("No", DialogInterface.OnClickListener { dialog, id ->
+            .setNegativeButton(getString(R.string.no), DialogInterface.OnClickListener { dialog, id ->
             })
         return builder.create()
     }
@@ -166,14 +163,14 @@ class SecondFragment : Fragment() {
         val picker = binding.pickerTypeOfBeer
         var values:ArrayList<String> = ArrayList()
         for (typeOfBeer in TypeOfBeer.values()){
-            values.add(typeOfBeer.toString())
+            values.add(typeOfBeer.toStringWithNumber())
         }
         picker.maxValue=values.size-1
         picker.minValue=0
         picker.displayedValues= values.toTypedArray()
-        picker.value=TypeOfBeer.values().indexOf(currentDrinkingActivity.currentTypeOfBeer)
+        picker.value=TypeOfBeer.values().indexOf(currentDrinkingSession.currentTypeOfBeer)
         picker.setOnValueChangedListener {picker, oldVal, newVal ->
-            currentDrinkingActivity.currentTypeOfBeer= TypeOfBeer.values()[newVal]
+            currentDrinkingSession.currentTypeOfBeer= TypeOfBeer.values()[newVal]
         }
     }
 

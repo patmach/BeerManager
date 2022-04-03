@@ -8,9 +8,9 @@
 
     <fragment
         android:id="@+id/SecondFragment"
-        android:name="com.example.beermanager.SecondFragment"
+        android:name="com.example.beermanager.MainFragment"
         android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
+        tools:layout="@layout/fragment_main">
 
     </fragment>
 </navigation>

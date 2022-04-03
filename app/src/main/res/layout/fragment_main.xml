@@ -4,18 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SecondFragment"
+    tools:context=".MainFragment"
     android:background="@color/dark_brown">
 
     <TextView
         android:id="@+id/textview_beer_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="  0"
+        android:text="@string/zero"
+        android:textSize="40dp"
         android:textColor="@color/white"
         android:gravity="bottom|left"
         android:background="@drawable/beer_icon"
-        android:layout_marginTop="28px"
+        android:layout_marginTop="14dp"
         app:layout_constraintEnd_toStartOf="@id/textview_price"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,7 +27,8 @@
         android:background="@drawable/purse"
         android:textColor="@color/white"
         android:gravity="center_vertical"
-        android:text="0"
+        android:text="@string/nonspace_zero"
+        android:textSize="30dp"
         app:layout_constraintEnd_toStartOf="@id/textview_time"
         app:layout_constraintStart_toEndOf="@id/textview_beer_count"
         app:layout_constraintTop_toTopOf="parent" />
@@ -37,7 +39,8 @@
         android:layout_height="wrap_content"
         android:background="@drawable/smart_watch"
         android:gravity="center"
-        android:text="00:00"
+        android:text="@string/_00_00"
+        android:textSize="20dp"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/textview_price"
@@ -61,7 +64,7 @@
                 android:id="@+id/button_new_drinking"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="START\nNEW\nDRINKING"
+                android:text="@string/start_new_drinking"
                 android:textColor="@color/dark_brown"
                 android:layout_gravity="center"
                 android:layout_marginEnd="20dp"
@@ -92,7 +95,7 @@
                 android:id="@+id/button_set_prices"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SET\nPRICES"
+                android:text="@string/set_prices"
                 android:textColor="@color/dark_brown"
                 android:layout_gravity="center"
                 android:layout_marginStart="20dp"
@@ -103,14 +106,13 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </LinearLayout>
-        <RelativeLayout
+        <com.example.beermanager.MyCanvasView
+            android:id="@+id/my_canvas_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="3"
             android:background="@drawable/simpleborder">
-
-            <include layout="@layout/my_canvas_view" />
-        </RelativeLayout>
+        </com.example.beermanager.MyCanvasView>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -123,7 +125,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="20dp"
-                android:text="MONTH\nSTATS"
+                android:text="@string/month_stats"
                 android:textColor="@color/dark_brown"
                 app:backgroundTint="@color/white"
 
@@ -139,7 +141,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
-                android:text="ALCOHOL\nCALCULATOR"
+                android:text="@string/alcohol_calculator"
                 android:layout_gravity="center"
                 android:textColor="@color/dark_brown"
                 app:backgroundTint="@color/white"

@@ -6,10 +6,10 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.example.beermanager.MainActivity.Companion.currentDrinkingActivity
+import com.example.beermanager.MainActivity.Companion.currentDrinkingSession
 import com.example.beermanager.MainActivity.Companion.loadLastCanvas
-import com.example.beermanager.SecondFragment.Companion.paint
-import com.example.beermanager.SecondFragment.Companion.path
+import com.example.beermanager.MainFragment.Companion.paint
+import com.example.beermanager.MainFragment.Companion.path
 import java.io.IOException
 import java.lang.System.out
 
@@ -51,27 +51,27 @@ class MyCanvasView: View{
      * Can contain bitmap from last run of application
      */
     private var lastBitmapOfPreviousRun:Bitmap?=null
-    companion object{
-        /**
-         * Contains paths of already valid drawn lines.
-         */
+    //companion object{
+    /**
+     * Contains paths of already valid drawn lines.
+     */
 
-        var pathList = ArrayList<Path>();
-        /**
-         * Contains path of currently drawn line.
-         */
-        var newPathList=ArrayList<Path>()
+    var pathList = ArrayList<Path>();
+    /**
+     * Contains path of currently drawn line.
+     */
+    var newPathList=ArrayList<Path>()
 
-        /**
-         * Contains paths of already invalid drawn lines.
-         */
-        var badPathList=ArrayList<Path>()
+    /**
+     * Contains paths of already invalid drawn lines.
+     */
+    var badPathList=ArrayList<Path>()
 
-        /**
-         * Specifies which color to use for painting lines.
-         */
-        var currentBrush = Color.WHITE;
-    }
+    /**
+     * Specifies which color to use for painting lines.
+     */
+    var currentBrush = Color.WHITE;
+    //}
     constructor(context: Context) : this(context, null){
         init()
     }
@@ -179,9 +179,16 @@ class MyCanvasView: View{
             val canvas = Canvas(bitmap)
             draw(canvas)
             canvas.setBitmap(bitmap);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, MainActivity.fileContext?.openFileOutput("lastStateOfCanvas.png",
-                Context.MODE_PRIVATE));
-
+            val r = Runnable {
+                bitmap.compress(
+                    Bitmap.CompressFormat.PNG, 100, MainActivity.fileContext?.openFileOutput(
+                        "lastStateOfCanvas.png",
+                        Context.MODE_PRIVATE
+                    )
+                );
+            }
+            val t = Thread(r)
+            t.start()
         }
         catch(e:IOException){
             out.println(e.stackTrace)
@@ -238,18 +245,18 @@ class MyCanvasView: View{
             pathList.addAll(newPathList)
             mToast?.setText("Beer added")
             saveCanvasToBitmap=true
-            currentDrinkingActivity.addBeer()
+            currentDrinkingSession.addBeer()
         }
         else {
             badPathList.addAll(newPathList)
             path=Path()
-            var message="BAD LINE!\n"
+            var message=context.getString(R.string.badline)
             if(!heightok)
-                message+="Your line has to be at least as long as 1/3 of the frame height. "
+                message+=context.getString(R.string.badline_height)
             if(!widthok)
-                message+="Your line has to be at least as narrow as 1/5 of the frame width. "
+                message+=context.getString(R.string.badline_width)
             if(!trajectoryok)
-                message+="Your line has to be drawn in one direction (top to bottom or bottom to top)."
+                message+=context.getString(R.string.badline_direction)
             mToast?.setText(message)
         }
         mToast?.show()
