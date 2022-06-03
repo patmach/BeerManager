@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.graphics.Color
 import com.example.beermanager.MainActivity
 import com.example.beermanager.R
+import com.example.beermanager.data.DrinkingSession.Companion.drinkingSessionProcessor
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.DefaultValueFormatter
 import java.text.SimpleDateFormat
@@ -96,7 +97,7 @@ private fun loadAxisLabelsForAlcoholCalculatorGraph(timeFromLastDrink:Double, de
  * @return Data and axis labels for month stats graph
  */
 fun getStatsGraphData(resources: Resources):Pair<BarData, ArrayList<String>> {
-    var monthStats = DrinkingSession.getNumberOfBeersByMonth()
+    var monthStats = drinkingSessionProcessor.getNumberOfBeersByMonth()
     var barEntries = ArrayList<BarEntry>()
     var count = 0
     //data

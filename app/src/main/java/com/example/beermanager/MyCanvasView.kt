@@ -6,15 +6,21 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import com.example.beermanager.MainActivity.Companion.currentDrinkingSession
 import com.example.beermanager.MainActivity.Companion.loadLastCanvas
 import com.example.beermanager.MainFragment.Companion.paint
 import com.example.beermanager.MainFragment.Companion.path
+import com.example.beermanager.data.BitmapProcessor
+import com.example.beermanager.viewmodels.MyCanvasViewModel
+import com.example.beermanager.viewmodels.PriceViewModel
 import java.io.IOException
 import java.lang.System.out
 
 
 class MyCanvasView: View{
+    private val bitmapProcessor = BitmapProcessor()
+
     private var params : ViewGroup.LayoutParams? = null
 
     /**
@@ -136,7 +142,7 @@ class MyCanvasView: View{
         //Loads canvas from previous run of app if this run continues in the same drinking activity.
         if (loadLastCanvas){
             try{
-                loadBitmapToCanvas(canvas)
+                getBitmap(canvas, lastBitmapOfPreviousRun, paint)
             }
             catch (e:IOException){
 
@@ -165,59 +171,23 @@ class MyCanvasView: View{
         }
 
         if(saveCanvasToBitmap){
-            saveCanvasToBitmap()
+            saveCanvasToBitmap=false;
+            setBitmap();
         }
     }
 
-    /**
-     * Saves current canvas state to bitmap file.
-     */
-    fun saveCanvasToBitmap(){
-        try{
-            saveCanvasToBitmap=false
-            var bitmap = Bitmap.createBitmap(this.width,this.height,Bitmap.Config.ARGB_8888);
-            val canvas = Canvas(bitmap)
-            draw(canvas)
-            canvas.setBitmap(bitmap);
-            val r = Runnable {
-                bitmap.compress(
-                    Bitmap.CompressFormat.PNG, 100, MainActivity.fileContext?.openFileOutput(
-                        "lastStateOfCanvas.png",
-                        Context.MODE_PRIVATE
-                    )
-                );
-            }
-            val t = Thread(r)
-            t.start()
-        }
-        catch(e:IOException){
-            out.println(e.stackTrace)
-        }
+    private fun getBitmap(canvas: Canvas, lastBitmapOfPreviousRun: Bitmap?, paint: Paint) {
+        this.lastBitmapOfPreviousRun = bitmapProcessor.loadBitmapToCanvas(canvas, lastBitmapOfPreviousRun,paint);
     }
 
-    /**
-     * Draws bitmap to canvas.
-     */
-    fun loadBitmapToCanvas(canvas:Canvas){
-        try{
-            var bitmapData: ByteArray = ByteArray(0)
-            if(lastBitmapOfPreviousRun==null) {
-
-                MainActivity.fileContext?.openFileInput("lastStateOfCanvas.png").use { fis ->
-                    if (fis != null) {
-                        bitmapData = fis.readBytes()
-                    }
-                }
-                lastBitmapOfPreviousRun =  BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.count());
-            }
-            if(lastBitmapOfPreviousRun!=null)
-                canvas.drawBitmap(lastBitmapOfPreviousRun as Bitmap,0F,0F, paint)
-
-        }
-        catch(e:IOException){
-            out.println(e.stackTrace)
-        }
+    private fun setBitmap() {
+        saveCanvasToBitmap=false;
+        var bitmap = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888);
+        val canvas = Canvas(bitmap)
+        draw(canvas);
+        bitmapProcessor.saveCanvasToBitmap(this.width, this.height,canvas, bitmap);
     }
+
 
     /**
      * Checks if new drawn line is valid

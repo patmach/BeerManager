@@ -9,9 +9,7 @@ import androidx.navigation.ui.navigateUp
 import android.view.Menu
 import android.view.MenuItem
 import com.example.beermanager.data.DrinkingSession
-import com.example.beermanager.data.DrinkingSession.Companion.allDrinkingSessions
-import com.example.beermanager.data.DrinkingSession.Companion.loadAllDrinkingSessions
-import com.example.beermanager.data.DrinkingSession.Companion.saveAllDrinkingSessions
+import com.example.beermanager.data.DrinkingSession.Companion.drinkingSessionProcessor
 import com.example.beermanager.databinding.ActivityMainBinding
 import java.util.*
 
@@ -38,13 +36,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fileContext=applicationContext
-        loadAllDrinkingSessions()
-        val lastDrinkLessThan5HoursAgo = allDrinkingSessions.any()
+        drinkingSessionProcessor.loadAllDrinkingSessions()
+        val lastDrinkLessThan5HoursAgo = drinkingSessionProcessor.allDrinkingSessions.any()
         {
             (Date().time-it.lastDrink.time)/(1000*60*60)<=5
         }
         if (lastDrinkLessThan5HoursAgo) {
-            currentDrinkingSession = allDrinkingSessions.last()
+            currentDrinkingSession = drinkingSessionProcessor.allDrinkingSessions.last()
             loadLastCanvas=true
         }
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -74,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        saveAllDrinkingSessions()
+        drinkingSessionProcessor.saveAllDrinkingSessions()
     }
 
 

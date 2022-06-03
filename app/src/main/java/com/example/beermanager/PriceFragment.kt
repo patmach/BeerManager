@@ -1,6 +1,5 @@
 package com.example.beermanager
 
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -49,22 +48,78 @@ class PriceFragment: DialogFragment() {
         super.onStart()
         editTextPrices.clear()
         binding.buttonSetPrices.setOnClickListener(View.OnClickListener {
-            priceViewModel.savePrices()
+            var prices= ArrayList<String>()
+            for (editText in editTextPrices){
+                prices.add(editText.text.toString());
+            }
+            priceViewModel.savePrices(prices)
             this.dismiss()
         })
-        priceViewModel.layoutsLiveData.observe(viewLifecycleOwner) {
+        priceViewModel.pricesLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is ViewModelResponse.Error -> Toast.makeText(context, it.error, Toast.LENGTH_LONG).show()
-                is ViewModelResponse.Success -> LoadForAllTypesOfBeer(it.content)
+                is ViewModelResponse.Success -> setPrices(it.content)
             }
         }
-        priceViewModel.getLayoutsAndEditTexts()
+        LoadForAllTypesOfBeer()
+        priceViewModel.loadPrices();
+    }
+
+    private fun setPrices(prices: MutableMap<TypeOfBeer, String>) {
+        var index = 0
+        for (typeOfBeer in TypeOfBeer.values()){
+            editTextPrices[index].setText(prices[typeOfBeer]);
+            index++;
+        }
     }
 
     /**
      * Creates layout that contains textview and edittext for each type of beer
      */
-    fun LoadForAllTypesOfBeer(newLayouts: MutableMap<TypeOfBeer,LinearLayout>){
+    fun LoadForAllTypesOfBeer(){
+        val mainLayout = binding.mainlayout
+        //var count = 0
+
+        for (typeOfBeer in TypeOfBeer.values()){
+            val p = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+
+            val id=View.generateViewId();
+            val newLinearLayout= LinearLayout(context)
+            newLinearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,0)
+            newLinearLayout.gravity=Gravity.CENTER
+            newLinearLayout.id=id
+
+            val textView= TextView(context)
+            textView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT)
+            textView.text=typeOfBeer.toStringWithNumber()
+
+            val editText=EditText(context);
+            editText.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT)
+            editText.minEms=10
+            editText.inputType=InputType.TYPE_NUMBER_FLAG_DECIMAL
+            if(currentDrinkingSession.prices[typeOfBeer]!! >0.0){
+                editText.setText(currentDrinkingSession.prices[typeOfBeer].toString())
+
+            }
+            editTextPrices.add(editText)
+
+            newLinearLayout.post(Runnable { newLinearLayout.addView(textView,p) })
+            newLinearLayout.post(Runnable { newLinearLayout.addView(editText,p) })
+            mainLayout.post(Runnable {
+                mainLayout.addView(newLinearLayout,p)
+                if (mainLayout.children.count()>1) {
+                    (newLinearLayout.layoutParams as RelativeLayout.LayoutParams).addRule(
+                        RelativeLayout.BELOW,
+                        mainLayout.children.elementAt(mainLayout.children.count() - 2).id
+                    )
+                }
+            })
+        }
+    }
+  /*  fun LoadForAllTypesOfBeer(newLayouts: MutableMap<TypeOfBeer,LinearLayout>){
         val mainLayout = binding.mainlayout
         //var count = 0
 
@@ -87,7 +142,7 @@ class PriceFragment: DialogFragment() {
                 }
             })
         }
-    }
+    }*/
 
 
 

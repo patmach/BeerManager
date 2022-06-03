@@ -134,8 +134,8 @@ class CalculatorFragment : DialogFragment() {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         calculatorViewModel.saveParameters(binding.edittextWeight.text.toString(), binding.switchSex.isChecked)
     }
 
